@@ -6,7 +6,7 @@ node_modules/
 .env.*
 *.pem
 *.key
-serviceAccountKey.json
+ServiceAccountKey.json
 firebase-credentials.json
 
 # Archivos de registro (Logs)
