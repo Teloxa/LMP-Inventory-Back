@@ -1,5 +1,5 @@
 import models from "../models/index.js";
-import admin from '../config/conexion.js';
+import admin from '../config/connection.js';
 import bcrypt from 'bcryptjs';
 
 export default {

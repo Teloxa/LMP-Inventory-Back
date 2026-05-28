@@ -1,8 +1,8 @@
-import userModel from './user_model';
-import productModel from './product_model';
-import providerModel from './provider_model';
-import shopModel from './shop_model';
-import orderModel from './order_model';
+import userModel from './user_model.js';
+import productModel from './product_model.js';
+import providerModel from './provider_model.js';
+import shopModel from './shop_model.js';
+import orderModel from './order_model.js';
 
 export default {
   userModel,

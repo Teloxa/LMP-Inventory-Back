@@ -1,5 +1,5 @@
 import models from "../models/index.js";
-import admin from '../config/conexion.js'; 
+import admin from '../config/connection.js'; 
 
 export default {
     // Add product
