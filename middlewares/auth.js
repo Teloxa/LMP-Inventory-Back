@@ -10,5 +10,16 @@ if(!SECRET_KEY) {
 
 const authMiddleware = (req, res, next) => {
   const token = req.status(401).json({
-    
-  })
+    if(!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+    try {
+      const decoded = jwt.verify(token, SECRET_KEY);
+      req.user = decoded;
+      next();
+    } catch (error) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+  };
+
+export default authMiddleware;
