@@ -10,11 +10,14 @@ if(!fs.existsSync(uploadDir)) {
 
 // configure multer storage
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: function (req, file, cb) {
       cb(null, uploadDir); // folder where the files will be stored
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Match.random() *1E9);
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, uniqueSuffix + path.extname(file.originalname)); // Unique name
   }
-)};
+});
+
+// Filter file for images
+const fileFilter = (req, file, cb )
