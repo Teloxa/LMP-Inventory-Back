@@ -1,28 +1,45 @@
-LMP Inventory Backend
+# LMP Inventory Backend
 
-Overview
-This is an Express.js REST API for the LMP Inventory system. It uses Firebase Admin SDK
-for data access and exposes routes under the /api prefix.
+## Overview
 
-Requirements
-- Node.js 18+ (recommended)
-- npm 9+
-- Firebase service account file: ServiceAccountKey.json in the project root
+This is a robust **Express.js REST API** built for the LMP Inventory system. It leverages the **Firebase Admin SDK** for secure, high-performance data access and exposes all endpoints under the `/api` prefix.
 
-Installation
-1. Clone the repository.
-2. Install dependencies:
-	npm install
-3. Create a .env file (optional). You can set the port:
-	PORT=3000
-4. Place your Firebase service account at:
-	ServiceAccountKey.json
+---
 
-Run
-- Development (nodemon):
-  npm run dev
-- Production:
-  npm start
+## Requirements
 
-The server will start on:
-http://localhost:3000 (or the PORT you set)
+Before running the project, ensure you have the following installed and configured:
+
+* **Node.js**: `v18+` (Recommended)
+* **npm**: `v9+`
+* **Firebase Credentials**: A valid `ServiceAccountKey.json` placed in the project root.
+
+---
+
+## Installation & Setup
+
+Follow these steps to get your development environment up and running:
+
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/your-username/lmp-inventory-backend.git](https://github.com/your-username/lmp-inventory-backend.git)
+cd lmp-inventory-backend
+```
+
+### 2. Install Dependencies
+npm install
+
+### 3. Environment Configuration
+Create a .env file in the root directory to manage your environment variables: PORT=3000
+
+### 4. Firebase SDK Setup
+```bash
+📂 lmp-inventory-backend
+├── 📂 src
+├── 📄 .env
+├── 📄 ServiceAccountKey.json  <-- Place it here (Do not commit to Git!)
+└── 📄 package.json
+```
+
+### 5. Running the aplication
+Uses nodemon to watch for file changes: npm run dev
