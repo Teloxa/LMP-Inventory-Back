@@ -23,7 +23,7 @@ export default {
             }
     
             const newStore = {
-                ...models.storeModel,
+                ...models.shopModel,
                 ...req.body
             };
     

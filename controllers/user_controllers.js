@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
+const USERS_COLLECTION = 'users';
 
 if (!SECRET_KEY) {
 throw new Error("The key JWT_SECRET is not define on the file .env");
@@ -14,21 +15,56 @@ throw new Error("The key JWT_SECRET is not define on the file .env");
 
 const TOKEN_EXPIRATION = "1h";
 
+const getUsername = (body) => body.user ?? body.usuario ?? body.username ?? body.name ?? body.nombre;
+
+const findUserByUsername = async (username) => {
+    const collectionNames = [USERS_COLLECTION, 'usuarios'];
+    const fieldNames = ['user', 'usuario'];
+
+    for (const collectionName of collectionNames) {
+        for (const fieldName of fieldNames) {
+            const snapshot = await admin.firestore().collection(collectionName).where(fieldName, '==', username).get();
+
+            if (!snapshot.empty) {
+                return snapshot;
+            }
+        }
+    }
+
+    return admin.firestore().collection(USERS_COLLECTION).where('user', '==', username).get();
+};
+
 export default {
 add: async (req, res) => {
     try {
+    const username = getUsername(req.body);
+    const { email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).json({
+        error: 'Username, email, and password are required. Send user, usuario, username, name, or nombre for the username field.',
+        });
+    }
+
     const findUser = await admin
         .firestore()
-        .collection("users")
-        .where("user", "==", req.body.user)
+        .collection(USERS_COLLECTION)
+        .where('user', '==', username)
         .get();
+    const findUserAlias = findUser.empty
+        ? await admin
+            .firestore()
+            .collection(USERS_COLLECTION)
+            .where('usuario', '==', username)
+            .get()
+        : findUser;
     const findEmail = await admin
         .firestore()
-        .collection("users")
-        .where("email", "==", req.body.email)
+        .collection(USERS_COLLECTION)
+        .where('email', '==', email)
         .get();
 
-    if (!findUser.empty) {
+    if (!findUserAlias.empty) {
         return res.status(400).json({
         error: "The username is already taken",
         });
@@ -40,14 +76,18 @@ add: async (req, res) => {
         });
     }
 
-    req.body.password = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = {
         ...models.userModel,
         ...req.body,
+        user: username,
+        usuario: username,
+        email,
+        password: hashedPassword,
     };
 
-    const userRef = admin.firestore().collection("users").doc();
+    const userRef = admin.firestore().collection(USERS_COLLECTION).doc();
     await userRef.set(newUser);
 
     res.status(200).json({ id: userRef.id, ...newUser });
@@ -125,19 +165,20 @@ delete: async (req, res) => {
     update: async (req, res) => {
     try {
         const id = req.params.id;
-        const { email, usuario, password } = req.body;
+            const username = getUsername(req.body);
+            const { email, password } = req.body;
 
         // If multer processed a file upload, build its public path; otherwise null
         const profileImage = req.file ? `/uploads/${req.file.filename}` : null;
 
         // --- Input validation ---
-        if (!email || !usuario) {
+            if (!email || !username) {
             return res.status(400).json({
                 error: 'Email and username are required fields.',
             });
         }
 
-        const emailSnapshot = await admin.firestore().collection('usuarios')
+            const emailSnapshot = await admin.firestore().collection(USERS_COLLECTION)
             .where('email', '==', email)
             .get();
 
@@ -149,9 +190,7 @@ delete: async (req, res) => {
         }
 
         // --- Uniqueness check: username ---
-        const usernameSnapshot = await admin.firestore().collection('usuarios')
-            .where('usuario', '==', usuario)
-            .get();
+        const usernameSnapshot = await findUserByUsername(username);
 
         if (!usernameSnapshot.empty) {
             const usernameTakenByOther = usernameSnapshot.docs.find(doc => doc.id !== id);
@@ -161,15 +200,18 @@ delete: async (req, res) => {
         }
         const updatedData = {
             ...req.body,
-            profileImage: profileImage || undefined,
+            user: username,
+            usuario: username,
+            email,
+            photoProfile: profileImage || undefined,
             password: password ? await bcrypt.hash(password, 10) : undefined,
         };
 
         // Strip undefined keys — Firestore merge would treat them as explicit writes
         if (!updatedData.password) delete updatedData.password;
-        if (!updatedData.profileImage) delete updatedData.profileImage;
+        if (!updatedData.photoProfile) delete updatedData.photoProfile;
 
-        await admin.firestore().collection('usuarios').doc(id).set(updatedData, { merge: true });
+        await admin.firestore().collection(USERS_COLLECTION).doc(id).set(updatedData, { merge: true });
 
         res.status(200).json({
             id,
@@ -186,14 +228,16 @@ delete: async (req, res) => {
 
 login: async (req, res) => {
     try {
-        const { usuario, password } = req.body;
+        const username = getUsername(req.body);
+        const { password } = req.body;
+
+        if (!username || !password) {
+            return res.status(400).json({ error: 'Username and password are required.' });
+        }
 
         // Look up the account by username (Firestore has no native "find by field",
         // so we use a where-query and treat an empty result as "not found")
-        const findUser = await admin.firestore()
-            .collection('usuarios')
-            .where('usuario', '==', usuario)
-            .get();
+        const findUser = await findUserByUsername(username);
 
         if (findUser.empty) {
             // Return 401, not 404 — avoid leaking whether an account exists

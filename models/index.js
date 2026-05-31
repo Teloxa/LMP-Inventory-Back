@@ -4,6 +4,7 @@ import providerModel from './provider_model.js';
 import shopModel from './shop_model.js';
 import orderModel from './order_model.js';
 
+// Export all models as a single object
 export default {
   userModel,
   productModel,

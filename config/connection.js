@@ -1,9 +1,15 @@
 import admin from 'firebase-admin';
-import serviceAccount from '../ServiceAccountKey.json' assert { type: 'json' };
+import serviceAccount from '../ServiceAccountKey.json' with { type: 'json' };
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  ignoredUndefinedProperties: true
+// Initialize Firebase Admin SDK
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
+
+admin.firestore().settings({
+  ignoreUndefinedProperties: true,
 });
 
 export default admin;

@@ -7,6 +7,7 @@ import orderRouter from './order_routes.js';
 
 const router = routerx();
 
+//router.use('/auth', authRouter);
 router.use('/user', userRouter);
 router.use('/products', productRouter);
 router.use('/providers', providerRouter);

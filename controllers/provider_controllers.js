@@ -30,7 +30,7 @@ export default {
             }
     
             const newSupplier = {
-                ...models.supplierModel,
+                ...models.providerModel,
                 ...req.body
             };
     

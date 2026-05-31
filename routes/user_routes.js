@@ -5,6 +5,7 @@ import upload from '../middlewares/upload.js';
 
 const router = routerx();
 
+// User routes for registration, login, and profile management
 router.post('/add', userController.add);
 router.get('/list', authMiddleware, userController.list);
 router.get('/getbyId/:id',authMiddleware, userController.GetById);
