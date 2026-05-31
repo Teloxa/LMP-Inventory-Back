@@ -1,45 +1,71 @@
 # LMP Inventory Backend
 
-## Overview
+Overview
+This is an Express.js REST API for the LMP Inventory system. It uses Firebase Admin SDK
+for data access and exposes routes under the /api prefix.
 
-This is a robust **Express.js REST API** built for the LMP Inventory system. It leverages the **Firebase Admin SDK** for secure, high-performance data access and exposes all endpoints under the `/api` prefix.
+Requirements
+- Node.js 18+ (recommended)
+- npm 9+
+- Firebase service account file: ServiceAccountKey.json in the project root
 
----
+Installation
+1. Clone the repository.
+2. Install dependencies:
+	npm install
+3. Create a .env file (optional). You can set the port:
+	PORT=3000
+4. Place your Firebase service account at:
+	ServiceAccountKey.json
 
-## Requirements
+Run
+- Development (nodemon):
+  npm run dev
+- Production:
+  npm start
 
-Before running the project, ensure you have the following installed and configured:
+The server will start on:
+http://localhost:3000 (or the PORT you set)
 
-* **Node.js**: `v18+` (Recommended)
-* **npm**: `v9+`
-* **Firebase Credentials**: A valid `ServiceAccountKey.json` placed in the project root.
+Base URL
+All routes are prefixed with /api.
 
----
+Routes
+Health
+- GET /api/ => Basic health response
 
-## Installation & Setup
+Users
+- POST /api/user/add
+- POST /api/user/login
+- GET /api/user/list (auth required)
+- GET /api/user/getbyId/:id (auth required)
+- PUT /api/user/update/:id (supports multipart form-data with profileImage)
+- DELETE /api/user/delete/:id (auth required)
 
-Follow these steps to get your development environment up and running:
+Products
+- POST /api/products/
+- GET /api/products/
+- GET /api/products/:id
+- PUT /api/products/:id
+- DELETE /api/products/:id
 
-### 1. Clone the Repository
-```bash
-git clone [https://github.com/your-username/lmp-inventory-backend.git](https://github.com/your-username/lmp-inventory-backend.git)
-cd lmp-inventory-backend
-```
+Providers
+- POST /api/providers/add
+- GET /api/providers/list
+- GET /api/providers/getbyId/:id
+- PUT /api/providers/update/:id
+- DELETE /api/providers/delete/:id
 
-### 2. Install Dependencies
-npm install
+Shops
+- POST /api/shops/add
+- GET /api/shops/list
+- GET /api/shops/getbyId/:id
+- PUT /api/shops/update/:id
+- DELETE /api/shops/delete/:id
 
-### 3. Environment Configuration
-Create a .env file in the root directory to manage your environment variables: PORT=3000
-
-### 4. Firebase SDK Setup
-```bash
-📂 lmp-inventory-backend
-├── 📂 src
-├── 📄 .env
-├── 📄 ServiceAccountKey.json  <-- Place it here (Do not commit to Git!)
-└── 📄 package.json
-```
-
-### 5. Running the aplication
-Uses nodemon to watch for file changes: npm run dev
+Orders
+- POST /api/orders/add
+- GET /api/orders/list
+- GET /api/orders/getbyid/:id
+- PUT /api/orders/update/:id
+- DELETE /api/orders/delete/:id
